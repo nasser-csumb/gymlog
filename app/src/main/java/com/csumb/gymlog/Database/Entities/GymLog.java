@@ -22,6 +22,7 @@ public class GymLog {
     private String exercise;
     private double weight;
     private int reps;
+    private int userId;
 
     @TypeConverters(LocalDateTypeConverter.class)
     private LocalDateTime date;
@@ -72,6 +73,14 @@ public class GymLog {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     @NonNull

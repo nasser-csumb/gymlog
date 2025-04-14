@@ -5,15 +5,24 @@
 
 package com.csumb.gymlog;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.csumb.gymlog.Database.Entities.GymLog;
+import com.csumb.gymlog.Database.Entities.User;
 import com.csumb.gymlog.Database.GymLogRepository;
 import com.csumb.gymlog.databinding.ActivityMainBinding;
 
@@ -21,11 +30,15 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String MAIN_ACTIVITY_USER_ID = "MainActivityUserId";
     ActivityMainBinding binding;
 
     GymLogRepository repository;
 
     private static final String TAG = "GYMLOG";
+
+    private int userId = -1;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +46,16 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        userId = getIntent().getIntExtra(MAIN_ACTIVITY_USER_ID, -1);
         repository = GymLogRepository.getRepository(getApplication());
+
+        if (userId == -1) {
+            Intent intent = Login.loginIntentFactory(getApplicationContext());
+
+            startActivity(intent);
+        } else {
+            user = repository.getUser(userId);
+        }
 
 
         binding.logButton.setOnClickListener(new View.OnClickListener() {
@@ -82,5 +104,61 @@ public class MainActivity extends AppCompatActivity {
             tv.setText(log.toString());
             binding.entriesList.addView(tv);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.logoutMenuItem);
+        item.setVisible(true);
+        item.setTitle(user.getUsername());
+
+
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
+                showLogoutAlert();
+                return false;
+            }
+        });
+
+        return true;
+    }
+
+    private void showLogoutAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        AlertDialog dialog = builder.create();
+
+        dialog.setTitle("Logout?!");
+
+        builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                MainActivity.this.finish();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    public static Intent mainActivityFactory(Context context, int userId) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(MAIN_ACTIVITY_USER_ID, userId);
+
+        return intent;
     }
 }

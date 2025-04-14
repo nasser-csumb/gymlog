@@ -9,13 +9,15 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.csumb.gymlog.Database.Entities.GymLog;
+import com.csumb.gymlog.Database.Entities.User;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {GymLog.class}, version = 1, exportSchema = false)
+@Database(entities = {GymLog.class, User.class}, version = 2, exportSchema = false)
 public abstract class GymLogDatabase extends RoomDatabase {
     public static final String gymLogTable = "gymLogTable";
+    public static final String USER_TABLE = "userTable";
 
     private static final String DATABASE_NAME = "GymLog_database";
 
@@ -49,9 +51,19 @@ public abstract class GymLogDatabase extends RoomDatabase {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-            // TODO: add default values
+            databaseWriteExecutor.execute(() -> {
+                UserDAO dao = INSTANCE.userDAO();
+                dao.deleteAll();
+                User admin = new User("admin1", "admin1");
+                admin.setAdmin(true);
+                dao.insert(admin);
+
+                User testUser = new User("user1", "user1");
+                dao.insert(testUser);
+            });
         }
     };
 
     public abstract GymLogDAO gymLogDAO();
+    public abstract UserDAO userDAO();
 }
