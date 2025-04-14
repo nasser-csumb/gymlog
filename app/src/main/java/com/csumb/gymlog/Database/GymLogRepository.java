@@ -45,12 +45,12 @@ public class GymLogRepository {
         return repository;
     }
 
-    public ArrayList<GymLog> getAllLogs() {
+    public ArrayList<GymLog> getAllLogs(int userId) {
         Future<ArrayList<GymLog>> future = GymLogDatabase.databaseWriteExecutor.submit(
                 new Callable<ArrayList<GymLog>>() {
                     @Override
                     public ArrayList<GymLog> call() throws Exception {
-                        return (ArrayList<GymLog>) gymLogDAO.getAllRecords();
+                        return (ArrayList<GymLog>) gymLogDAO.getAllRecords(userId);
                     }
                 }
         );

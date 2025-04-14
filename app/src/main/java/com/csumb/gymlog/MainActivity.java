@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             GymLog log = new GymLog(exerciseName, weight, reps);
+            log.setId(userId);
 
             repository.insertGymLog(log);
         } catch (Exception e) {
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshDisplay() {
-        ArrayList<GymLog> logs = repository.getAllLogs();
+        ArrayList<GymLog> logs = repository.getAllLogs(userId);
 
         for (var log : logs) {
             TextView tv = new TextView(getApplicationContext());
@@ -117,7 +118,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.logoutMenuItem);
         item.setVisible(true);
-        item.setTitle(user.getUsername());
+
+        if (user != null) {
+            item.setTitle(user.getUsername());
+        } else {
+            item.setTitle("TestUser");
+        }
+
 
 
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -134,10 +141,6 @@ public class MainActivity extends AppCompatActivity {
     private void showLogoutAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        AlertDialog dialog = builder.create();
-
-        dialog.setTitle("Logout?!");
-
         builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -148,9 +151,13 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                dialog.dismiss();
+                dialogInterface.dismiss();
             }
         });
+
+
+        AlertDialog dialog = builder.create();
+        dialog.setTitle("Logout?!");
 
         dialog.show();
     }

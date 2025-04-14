@@ -1,6 +1,7 @@
 package com.csumb.gymlog.Database;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -14,7 +15,7 @@ import com.csumb.gymlog.Database.Entities.User;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {GymLog.class, User.class}, version = 2, exportSchema = false)
+@Database(entities = {GymLog.class, User.class}, version = 4, exportSchema = false)
 public abstract class GymLogDatabase extends RoomDatabase {
     public static final String gymLogTable = "gymLogTable";
     public static final String USER_TABLE = "userTable";
@@ -55,10 +56,12 @@ public abstract class GymLogDatabase extends RoomDatabase {
                 UserDAO dao = INSTANCE.userDAO();
                 dao.deleteAll();
                 User admin = new User("admin1", "admin1");
+                admin.setId(0);
                 admin.setAdmin(true);
                 dao.insert(admin);
 
                 User testUser = new User("user1", "user1");
+                testUser.setId(1);
                 dao.insert(testUser);
             });
         }
