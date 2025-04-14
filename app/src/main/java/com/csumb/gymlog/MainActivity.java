@@ -16,6 +16,8 @@ import com.csumb.gymlog.Database.Entities.GymLog;
 import com.csumb.gymlog.Database.GymLogRepository;
 import com.csumb.gymlog.databinding.ActivityMainBinding;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        repository = new GymLogRepository(getApplication());
+        repository = GymLogRepository.getRepository(getApplication());
 
 
         binding.logButton.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        refreshDisplay();
     }
 
     private void saveEntry() {
@@ -65,8 +68,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshDisplay() {
-        TextView tv = new TextView(getApplicationContext());
-        tv.setText("EXERCISEE!!!");
-        binding.entriesList.addView(tv);
+        ArrayList<GymLog> logs = repository.getAllLogs();
+
+        for (var log : logs) {
+            TextView tv = new TextView(getApplicationContext());
+            tv.setText(
+                    "Log: " + log.getDate() + "\n" +
+                            "\tExercise: " + log.getExercise() + "\n" +
+                            "\tWeight: " + log.getWeight() + "\n" +
+                            "\tReps: " + log.getReps()
+            );
+            binding.entriesList.addView(tv);
+        }
     }
 }

@@ -12,9 +12,34 @@ import java.util.concurrent.Future;
 public class GymLogRepository {
     private GymLogDAO gymLogDAO;
 
-    public GymLogRepository(Application application) {
+    private static GymLogRepository repository;
+
+    private GymLogRepository(Application application) {
         GymLogDatabase db = GymLogDatabase.getDatabase(application);
         this.gymLogDAO = db.gymLogDAO();
+    }
+
+    public static GymLogRepository getRepository(Application application) {
+        if (repository != null) {
+            return repository;
+        }
+
+        Future<GymLogRepository> future = GymLogDatabase.databaseWriteExecutor.submit(
+                new Callable<GymLogRepository>() {
+                    @Override
+                    public GymLogRepository call() throws Exception {
+                        return new GymLogRepository(application);
+                    }
+                }
+        );
+
+        try {
+            repository = future.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return repository;
     }
 
     public ArrayList<GymLog> getAllLogs() {
