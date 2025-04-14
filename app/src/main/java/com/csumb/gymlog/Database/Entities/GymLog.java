@@ -2,12 +2,16 @@ package com.csumb.gymlog.Database.Entities;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
 import com.csumb.gymlog.Database.GymLogDatabase;
+import com.csumb.gymlog.Database.LocalDateTypeConverter;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity(tableName = GymLogDatabase.gymLogTable)
 public class GymLog {
@@ -17,13 +21,15 @@ public class GymLog {
     private String exercise;
     private double weight;
     private int reps;
-    private LocalDate date;
+
+    @TypeConverters(LocalDateTypeConverter.class)
+    private LocalDateTime date;
 
     public GymLog(String exercise, double weight, int reps) {
         this.exercise = exercise;
         this.weight = weight;
         this.reps = reps;
-        date = LocalDate.now();
+        date = LocalDateTime.now();
     }
 
     @NotNull
@@ -59,11 +65,11 @@ public class GymLog {
         this.reps = reps;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 }

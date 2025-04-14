@@ -12,11 +12,15 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.csumb.gymlog.Database.Entities.GymLog;
+import com.csumb.gymlog.Database.GymLogRepository;
 import com.csumb.gymlog.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
+
+    GymLogRepository repository;
 
     private static final String TAG = "GYMLOG";
 
@@ -25,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        repository = new GymLogRepository(getApplication());
 
 
         binding.logButton.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             weight = Float.parseFloat(binding.weight.getText().toString());
             reps = Integer.parseInt(binding.reps.getText().toString());
+
+            GymLog log = new GymLog(exerciseName, weight, reps);
+
+            repository.insertGymLog(log);
         } catch (Exception e) {
             Log.d(TAG, "Error while parsing weight or reps");
         }
