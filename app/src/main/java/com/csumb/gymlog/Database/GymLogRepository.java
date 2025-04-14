@@ -12,12 +12,9 @@ import java.util.concurrent.Future;
 public class GymLogRepository {
     private GymLogDAO gymLogDAO;
 
-    private ArrayList<GymLog> allLogs;
-
     public GymLogRepository(Application application) {
         GymLogDatabase db = GymLogDatabase.getDatabase(application);
         this.gymLogDAO = db.gymLogDAO();
-        this.allLogs = (ArrayList<GymLog>) this.gymLogDAO.getAllRecords();
     }
 
     public ArrayList<GymLog> getAllLogs() {
@@ -25,6 +22,24 @@ public class GymLogRepository {
                 new Callable<ArrayList<GymLog>>() {
                     @Override
                     public ArrayList<GymLog> call() throws Exception {
+                        return (ArrayList<GymLog>) gymLogDAO.getAllRecords();
+                    }
+                }
+        );
+        try {
+            return future.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void insertGymLog(GymLog gymLog) {
+        Future<Object> future = GymLogDatabase.databaseWriteExecutor.submit(
+                new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        gymLogDAO.insert(gymLog);
                         return null;
                     }
                 }
@@ -34,6 +49,5 @@ public class GymLogRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return allLogs;
     }
 }
