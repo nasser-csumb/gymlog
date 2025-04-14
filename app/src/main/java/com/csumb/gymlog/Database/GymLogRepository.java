@@ -104,7 +104,7 @@ public class GymLogRepository {
         return null;
     }
 
-    public User getUser(int userId) {
+    public User getUserById(int userId) {
         var getUserFuture = GymLogDatabase.databaseWriteExecutor.submit(
                 new Callable<User>() {
                     @Override

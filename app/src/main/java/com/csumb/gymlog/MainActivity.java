@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
         } else {
-            user = repository.getUser(userId);
+            user = repository.getUserById(userId);
         }
 
 
