@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -56,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
             weight = Float.parseFloat(binding.weight.getText().toString());
             reps = Integer.parseInt(binding.reps.getText().toString());
 
+            if (exerciseName.length() <= 0 || weight <= 0 || reps <= 0) {
+                CharSequence text = "Enter some values to save them.";
+                Toast.makeText(getApplicationContext(),text, Toast.LENGTH_SHORT).show();
+                throw new Error("Blank!");
+            }
+
             GymLog log = new GymLog(exerciseName, weight, reps);
 
             repository.insertGymLog(log);
@@ -72,12 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (var log : logs) {
             TextView tv = new TextView(getApplicationContext());
-            tv.setText(
-                    "Log: " + log.getDate() + "\n" +
-                            "\tExercise: " + log.getExercise() + "\n" +
-                            "\tWeight: " + log.getWeight() + "\n" +
-                            "\tReps: " + log.getReps()
-            );
+            tv.setText(log.toString());
             binding.entriesList.addView(tv);
         }
     }

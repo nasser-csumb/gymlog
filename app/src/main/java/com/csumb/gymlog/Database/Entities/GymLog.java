@@ -1,5 +1,6 @@
 package com.csumb.gymlog.Database.Entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverter;
@@ -71,5 +72,14 @@ public class GymLog {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Log: " + getDate() + "\n" +
+                "\tExercise: " + getExercise() + "\n" +
+                "\tWeight: " + getWeight() + "\n" +
+                "\tReps: " + getReps();
     }
 }
